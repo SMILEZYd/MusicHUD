@@ -1,7 +1,8 @@
-package com.smilezyd.musichud;
+package com.smilezyd.musichud.musiclisteners;
 
 //import internal packages
 import com.smilezyd.musichud.musiclisteners.MusicHudData;
+import com.smilezyd.musichud.MusicHUDClient;
 
 //import external packages
 import com.google.gson.JsonObject;
@@ -27,7 +28,7 @@ public class SpriteProvider {
      * Given a sound location like "minecraft:music_disc.cat",
      * return the corresponding vanilla disc texture.
      */
-    public static ResourceLocation getDiscSprite(ResourceLocation soundLocation, String title) {
+    public static ResourceLocation getDiscSprite(ResourceLocation soundLocation) {
         try {
             
             String discId = soundLocation.getPath().replace("music_disc.", "");     // Strip "music_disc." → becomes "cat"
@@ -35,14 +36,14 @@ public class SpriteProvider {
             return ResourceLocation.withDefaultNamespace("textures/item/music_disc_" + discId + ".png");     // Build texture path: textures/item/music_disc_cat.png
         } catch (Exception e) {
             
-            return getDefaultSprite(title);
+            return getDefaultSprite(MusicHUDClient.getMusicTitle(soundLocation));
             
         }
         
     }
 
     /**
-     * If we can’t find a match, return a generic fallback.
+     * If a match cannot be found, return a generic fallback.
      */
     public static ResourceLocation getDefaultSprite(String title) {
         if (title.contains("C418")) {

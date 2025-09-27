@@ -16,6 +16,7 @@ import java.util.List;
 
 public class MusicHudData {
     
+    public static String key = "";
     public static String songTitle = "";
     public static String currentSong = "";
     public static ResourceLocation currentDiscSprite = null;

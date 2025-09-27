@@ -1,8 +1,13 @@
 package com.smilezyd.musichud;
 
-import static com.smilezyd.musichud.Localization.translationKey;
+import com.smilezyd.musichud.hud.MusicHudOverlay;
+import com.smilezyd.musichud.musiclisteners.MusicHudData;
+import com.smilezyd.musichud.musiclisteners.ClientMusicListner;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
@@ -10,27 +15,25 @@ public class MusicHUDClient implements ClientModInitializer {
 	
     public static final String MOD_ID = "musichud";
     
+    public static String nameFromPath(String path) {
+        String name = I18n.get(path);
+        return name;
+    }
     
-    public static Component getTranslatedTitle(String location) {
+    public static String getMusicTitle(ResourceLocation location) {
         
-        String key = Localization.translationKey(location);
-        if (!I18n.exists(key)) {
-            String[] splitLocation = location.split("/");
-            if (splitLocation.length > 0) {
-                String name = splitLocation[splitLocation.length -1];
-                if (name != null && !name.isBlank()) {
-                    String oldKey = Localization.translationKey("music", name);
-                    if (I18n.exists(oldKey)) {
-                        return Component.translatable(oldKey);
-                    }
-                    
-                }
-                
-            }
-            
+        String path = location.getPath();
+        if (path.contains("records")) {
+            String[] splitName = path.split("/");
+            String recordName = splitName[splitName.length - 1];
+            MusicHudData.key = "jukebox_song.minecraft." + recordName;
+        }
+        else {
+            MusicHudData.key = "musichud.lang:" + path;
         }
         
-        return Component.translatable(key);
+        String name = nameFromPath(MusicHudData.key);
+        return name;
         
     }
     
@@ -38,15 +41,11 @@ public class MusicHUDClient implements ClientModInitializer {
     @Override
 	public void onInitializeClient() {
         
+        ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
+            client.getSoundManager().addListener(new ClientMusicListner());
+        });
         
-        
-        
-        
-        
-        
-        
-        
-        
+        MusicHudOverlay.register();
         
         
 	}
